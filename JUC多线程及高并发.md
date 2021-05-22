@@ -238,11 +238,14 @@ volatile实现禁止指令重排，从而避免了多线程环境下程序出现
    2. 保证某些变量的内存可见性（利用该特性实现volatile的内存可见性）
 
 - StoreStore屏障，保证上面的普通写不和volatile写发生重排序
+
 - StoreLoad屏障，保证volatile写与后面可能的volatile读写不发生重排序
+
 - LoadLoad屏障，禁止volatile读与后面的普通读重排序
+
 - LoadStore屏障，禁止volatile读和后面的普通写重排序
 
-![Thread_15](/Users/na/IdeaProjects/Technical summary/Image/Thread_15.png)
+  
 
 #### 2、JMM（java内存模型）
 
@@ -342,9 +345,7 @@ public class SingletonDemo {
    private static volatile SingletonDemo instance = null;
    ```
 
-### 二、CAS你知道吗
-
-![Thread_19](/Users/na/IdeaProjects/Technical summary/Image/Thread_19.png)
+### 二、CAS
 
 #### 1、compareAndSet----比较并交换
 
@@ -419,8 +420,6 @@ false	 current data is 2019
 
    CAS并发原语体现在JAVA语言中就是sun.misc.Unsafe类中各个方法。调用Unsafe类中的CAS方法，JVM会帮我们实现CAS汇编指令。这是一种完全依赖于硬件的功能，通过他实现了原子操作。由于CAS是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成的，用于完成某个功能的一个过程，并且原语的执行必须是连续的，在执行过程中不允许被中断，也就是说**CAS是一条CPU的原子指令，不会造成数据不一致问题**。
 
-   ![Thread_16](/Users/na/IdeaProjects/Technical summary/Image/Thread_16.png)
-   
    var1 AtomicInteger对象本身
    
    var2 该对象的引用地址
@@ -435,10 +434,6 @@ false	 current data is 2019
 如果相同，更新var5+var4并且返回true，
 
 如果不同，继续去之然后再比较，直到更新完成
-
-![Thread_17](/Users/na/IdeaProjects/Technical summary/Image/Thread_17.png)
-
-![Thread_18](/Users/na/IdeaProjects/Technical summary/Image/Thread_18.png)
 
 #### 3、CAS缺点
 
@@ -828,8 +823,6 @@ private static final Object PRESENT = new Object();
 - 线程的上下文切换的是什么？当两个线程是属于同一个进程，**因为虚拟内存是共享的，所以在切换时，虚拟内存这些资源就保持不动，只需要切换线程的私有数据、寄存器等不共享的数据。**
 - **如果你能确定被锁住的代码执行时间很短，就不应该用互斥锁，而应该选用自旋锁，否则使用互斥锁。**
 
-![Thread_21](/Users/na/IdeaProjects/Technical summary/Image/Thread_21.png)
-
 #### 5、自旋锁：非公平锁
 
 - 自旋锁是通过 CPU 提供的 `CAS` 函数（*Compare And Swap*），在「用户态」完成加锁和解锁操作，不会主动产生线程上下文切换，所以相比互斥锁来说，会快一些，开销也小一些。
@@ -1058,8 +1051,6 @@ private static final Object PRESENT = new Object();
        }
    }
    ```
-
-![Thread_9](/Users/na/IdeaProjects/Technical summary/Image/Thread_9.png)
 
 #### 2、CyclicBarrier（集齐七颗龙珠召唤神龙）
 
@@ -1775,11 +1766,13 @@ public ThreadPoolExecutor(int corePoolSize,
 
 7. **==handler==**：拒绝策略，表示当工作队列workQueue满了并且工作线程大于等于线程池的最大线程数（maximumPoolSize）时如何来拒绝请求执行的runable的策略
 
-![Thread_11](/Users/na/IdeaProjects/Technical summary/Image/Thread_11.png)
-
 #### 5、线程池的底层工作原理
 
-![Thread_12](/Users/na/IdeaProjects/Technical summary/Image/Thread_12.png)
+![线程池原理1](/Users/kaihe/Desktop/kaihe_sde_interview/面试知识截图/线程池原理1.png)
+
+![线程池原理2](/Users/kaihe/Desktop/kaihe_sde_interview/面试知识截图/线程池原理2.png)
+
+![线程池原理3](/Users/kaihe/Desktop/kaihe_sde_interview/面试知识截图/线程池原理3.png)
 
 **==流程==**
 
@@ -1911,8 +1904,6 @@ public class MyThreadPoolDemo {
 
    死锁是指两个或两个以上的进程在执行过程中，因争夺资源而造成的一种互相等待的现象。一种非常简单的避免死锁的方式就是：**指定获取锁的顺序，并强制线程按照指定的顺序获取锁。**因此，如果所有的线程都是以同样的顺序加锁和释放锁，就不会出现死锁了。
 
-   ![Thread_13](/Users/na/IdeaProjects/Technical summary/Image/Thread_13.png)
-   
 2. 产生死锁的主要原因
 
    - 系统资源不足
@@ -2219,8 +2210,6 @@ public abstract class AbstractQueuedSynchronizer
  }
 ```
 
-![Thread_22](/Users/na/IdeaProjects/Technical summary/Image/Thread_22.webp)
-
 - `Condition`是在`java 1.5`中才出现的，它用来替代传统的`Object`的`wait()`、`notify()`实现线程间的协作，相比使用`Object`的`wait()`、`notify()`，使用`Condition`中的`await()`、`signal()`这种方式实现线程间协作更加安全和高效。因此通常来说比较推荐使用`Condition`
 
 ## 十三、**synchronized**：悲观锁
@@ -2261,8 +2250,6 @@ public abstract class AbstractQueuedSynchronizer
 
 ### 4. 锁升级：存储在对象的内存中的对象头的markword中
 
-![CAS_2](/Users/na/IdeaProjects/Technical summary/Image/CAS_2.png)
-
 ### 5. 偏向锁
 
 - 偏向锁是指一段同步代码一直被一个线程所访问，那么该线程会自动获取锁。降低获取锁的代价。
@@ -2285,8 +2272,6 @@ public abstract class AbstractQueuedSynchronizer
   2. 有一个线程获取到monitor锁后，就赋值给当前线程，并且计数器+1
   3. 如果线程调用wait方法，将释放锁，当前线程置为null，计数器-1，同时进入waitSet等待被唤醒，调用notify或者notifyAll之后又会进入entryList竞争锁
   4. 如果线程执行完毕，同样释放锁，计数器-1，当前线程置为null
-
-![Thread_20](/Users/na/IdeaProjects/Technical summary/Image/Thread_20.webp)
 
 ### 8. 说说 synchronized 关键字和 volatile 关键字的区别
 
