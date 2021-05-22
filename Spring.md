@@ -107,8 +107,6 @@
 - 当要销毁 Bean 的时候，如果 Bean 实现了 `DisposableBean` 接口，执行 `destroy()` 方法。
 - 当要销毁 Bean 的时候，如果 Bean 在配置文件中的定义包含 destroy-method 属性，执行指定的方法。
 
-![Spring_5](https://upload-images.jianshu.io/upload_images/18992122-3c6aed76b93108f2.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
-
 ## 7. 说说自己对于 Spring MVC 了解?
 
 - 客户端（浏览器）发送请求，直接请求到 `DispatcherServlet`。

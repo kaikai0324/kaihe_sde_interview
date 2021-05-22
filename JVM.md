@@ -1,4 +1,16 @@
+尚硅谷JVM学习视频（看前200）：
 
+https://www.bilibili.com/video/BV1PJ411n7xZ?from=search&seid=12871166592818316098
+
+笔记：
+
+https://juejin.cn/post/6844904096151896077#heading-4
+
+
+
+# JVM
+
+[toc]
 
 ## 1. 类加载子系统(Class Loader Subsystem) 
 
