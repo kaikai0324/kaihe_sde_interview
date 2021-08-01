@@ -97,6 +97,16 @@ newCachedThreadPool将corePoolSize设置为0，将maximumPoolSize设置为Intege
 
 threadlocal里存储ThreadLoalMap。ThreadLocalMap是threadlocal里的静态内部类
 ThreadLocal的实现是这样的：每个Thread 维护一个 ThreadLocalMap 映射表，这个映射表的 key是 ThreadLocal 实例本身，value是真正需要存储的 Object（同线程每次new一个ThreadLocal，map桶被占用+1）。
+
+`ThreadLocal` 能在每个线程间进行隔离，其主要是靠在每个 `Thread` 对象中维护一个 `ThreadLocalMap` 来实现的。因为是线程中的对象，所以对其他线程不可见，从而达到隔离的目的。那为什么是一个 `Map` 结构呢。主要是因为一个线程中可能有多个 `ThreadLocal` 对象，这就需要一个集合来进行存储区分，而用 `Map` 可以更快地查找到相关的对象。
+
+```text
+ThreadLocal<Integer> threadLocal = new ThreadLocal<>();
+threadLocal.get();
+threadLocal.set(1);
+threadLocal.remove();
+```
+
 也就是说 ThreadLocal 本身并不存储值，它只是作为一个 key 来让线程从 ThreadLocalMap 获取 value。值得注意的是图中的虚线，表示 ThreadLocalMap 是使用 ThreadLocal 的弱引用作为 Key的，弱引用的对象在 GC 时会被回收。
 
 
