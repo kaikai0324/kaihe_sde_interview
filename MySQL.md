@@ -18,7 +18,9 @@ ALTER TABLE people ADD INDEX fname_lname_age (firstname,lastname,age);
 多列索引还有另外一个 优点，它通过称为最左前缀（Leftmost Prefixing）的概念体现出来。继续考虑前面的例子，现在我们有一个firstname、lastname、age列上的多列索引，我们称这个索引 为fname_lname_age。当搜索条件是以下各种列的组合时，MySQL将使用fname_lname_age索引：
 
 firstname，lastname，age
+
 firstname，lastname
+
 firstname
 从另一方面理解，它相当于我们创建了(firstname，lastname，age)、(firstname，lastname)以及 (firstname)这些列组合上的索引。下面这些查询都能够使用这个fname_lname_age索引：
 
