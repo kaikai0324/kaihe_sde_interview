@@ -9,12 +9,10 @@
 -  **IOC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。**
 - **Spring IoC的初始化过程：**
 - 1. **Resource**定位并加载配置文件
-  
   2. 解析配置文件中的bean节点，一个bean节点对应一个BeanDefinition对象（这个对象会保存我们在Bean节点内配置的所有内容，比如id，全限定类名，依赖值等等）
-  
   3. BeanDefinition集合生成（BeanDefinition对象内包含生成这个对象所需要的所有参数）所有非懒加载的单例对象，其余的会在使用的时候再实例化对应的对象，注册到**BeanFactory**的beanDefinitionMap
 
-![Spring_1](/Users/na/IdeaProjects/Technical summary/Image/Spring_1.png)
+![Spring_1](/Users/kaihe/Desktop/kaihe_sde_interview/Image/Spring_1.png)
 
   - IOC其实就是工厂模式+Java的反射机制
   - **DI—Dependency Injection，即“依赖注入”**：**组件之间依赖关系**由容器在运行期决定，形象的说，即**由容器动态的将某个依赖关系注入到组件之中**。**依赖注入的目的并非为软件系统带来更多功能，而是为了提升组件重用的频率，并为系统搭建一个灵活、可扩展的平台。**通过依赖注入机制，我们只需要通过简单的配置，而无需任何代码就可指定目标需要的资源，完成自身的业务逻辑，而不需要关心具体的资源来自何处，由谁实现。
@@ -39,7 +37,7 @@
 - **Join Point(连接点)**：Java执行流中的每个方法调用可以看成是一个连接点。
 - **切入点(Point Cut)**：**从所有的连接点中挑选需要被切入的切入点。**
 
-![Spring_2](/Users/na/IdeaProjects/Technical summary/Image/Spring_2.jpg)
+![Spring_2](/Users/kaihe/Desktop/kaihe_sde_interview/Image/Spring_2.jpg)
 
 - Java程序执行流加入了代理模式，使得所有的方法调用都经过了代理对象。Spring AOP负责控制着整个容器内部的代理对象。
 
@@ -57,7 +55,7 @@
 
   环绕通知（round）：可以控制目标方法是否执行
 
-![Spring_3](/Users/na/IdeaProjects/Technical summary/Image/Spring_3.jpg)
+![Spring_3](/Users/kaihe/Desktop/kaihe_sde_interview/Image/Spring_3.jpg)
 
 ### 2.1 AOP 代理失效
 
@@ -279,7 +277,7 @@ public class B {
 - 所以如果没有AOP的话确实可以两级缓存就可以解决循环依赖的问题，如果加上AOP，两级缓存是无法解决的，不可能每次执行singleFactory.getObject()方法都给我产生一个新的代理对象，所以还要借助另外一个缓存来保存产生的代理对象。
 - 因为AService是单例的，每次执行singleFactory.getObject()方法又会产生新的代理对象，假设这里只有一级和三级缓存的话，我每次从三级缓存中拿到singleFactory对象，执行getObject()方法又会产生新的代理对象，这是不行的，因为AService是单例的，所有这里我们要借助二级缓存来解决这个问题，将执行了singleFactory.getObject()产生的对象放到二级缓存中去，后面去二级缓存中拿，没必要再执行一遍singletonFactory.getObject()方法再产生一个新的代理对象，保证始终只有一个代理对象。
 
-![Spring_4](https://upload-images.jianshu.io/upload_images/18992122-bac2b241258060e7.png?imageMogr2/auto-orient/strip|imageView2/2/format/webp)
+![Spring_4](/Users/kaihe/Desktop/kaihe_sde_interview/Image/Spring_4.png)
 
 ## 17. @ControllerAdvice全局异常处理
 
@@ -558,3 +556,5 @@ protected Class<?> getSpringFactoriesLoaderFactoryClass() {
 - Starters可以理解为启动器，它包含了一系列可以集成到应用里面的依赖包，你可以一站式集成Spring及其他技术，而不需要到处找示例代码和依赖包。如你想使用Spring JPA访问数据库，只要加入spring-boot-starter-data-jpa启动器依赖就能使用了。
 - Spring Boot官方的启动器都是以spring-boot-starter-命名的，代表了一个特定的应用类型。
 - 第三方的启动器不能以spring-boot开头命名，它们都被Spring Boot官方保留。一般一个第三方的应该这样命名，像mybatis的mybatis-spring-boot-starter。
+
+![Spring_5](/Users/kaihe/Desktop/kaihe_sde_interview/Image/Spring_5.png)

@@ -412,16 +412,21 @@ mysql> UPDATE accounts SET level = 100 WHERE id = 5;
 
   - 当一个事务读取到另外一个事务修改但未提交的数据，而这个数据是有可能回滚的。
 
+  ![mysql_2](/Users/kaihe/Desktop/kaihe_sde_interview/Image/mysql_2.png)
+
 - 不可重复读
 
   - 在数据库访问中，**一个事务范围**内**两个相同的查询**却返回了**不同**数据。这是由于查询时系统中其他事务修改的提交而引起的。
-
   - **在 InnoDB 存储引擎中，SELECT 操作的不可重复读问题通过 MVCC 得到了解决，而 UPDATE、DELETE 的不可重复读问题是通过 Record Lock 解决的，INSERT 的不可重复读问题是通过 Next-Key Lock（Record Lock + Gap Lock）解决的。**
+
+  ![mysql_3](/Users/kaihe/Desktop/kaihe_sde_interview/Image/mysql_3.png)
 
 - 幻读
 
   - 当一个事物对数据进行查询之后，第二个事物向表中**插入或删除**了一行新数据，此时第一个事物再次进行查询时发现数据与第一次查询时不同。
   - 不可重复读是因为其他事务进行了 UPDATE 操作，幻读是因为其他事务进行了 INSERT 或者 DELETE 操作。
+
+  ![mysql_4](/Users/kaihe/Desktop/kaihe_sde_interview/Image/mysql_4.png)
 
 - MySQL是如何解决幻读的？
 
@@ -494,7 +499,17 @@ mysql> UPDATE accounts SET level = 100 WHERE id = 5;
 ### 7.3 **MyISAM索引**：非聚簇索引
 
   - MyISAM的数据文件和索引文件是分开存储的。MyISAM使用B+树构建索引树时，叶子节点中存储的键值为索引列的值，数据为索引所在行的磁盘地址。
+
   - 主键索引
+
+    - **根据主键等值查询数据：**
+
+    ![MySQL_8](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_8.png)
+
+    - **根据主键范围查询数据：**
+
+    ![MySQL_9](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_9.png)
+
   - 辅助索引
 
     - 在 MyISAM 中,辅助索引和主键索引的结构是一样的，没有任何区别，叶子节点的数据存储的都是行记录的磁盘地址。只是主键索引的键值是唯一的，而辅助索引的键值可以重复。
@@ -511,13 +526,16 @@ mysql> UPDATE accounts SET level = 100 WHERE id = 5;
   > 1. 在表上定义主键PRIMARY KEY，InnoDB将主键索引用作聚簇索引。
   > 2. 如果表没有定义主键，InnoDB会选择第一个不为NULL的唯一索引列用作聚簇索引。
   > 3. 如果以上两个都没有，InnoDB 会使用一个6 字节长整型的隐式字段 ROWID字段构建聚簇索引。该ROWID字段会在插入新行时自动递增。
+  
+  ![MySQL_10](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_10.png)
 
 #### 7.4.2 辅助索引：
 
 - 除聚簇索引之外的所有索引都称为辅助索引，InnoDB的辅助索引只会存储主键的值。因此在使用辅助索引进行查找时，需要先查找到主键值，然后再到主索引中进行查找，这个过程也被称作回表查询。
-
 - 底层叶子节点的按照（age，id）的顺序排序，先按照age列从小到大排序，age列相同时按照id列从小到大排序。
 - 使用辅助索引需要检索两遍索引：首先检索辅助索引获得主键，然后使用主键到主索引中检索获得记录。
+
+![MySQL_11](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_11.png)
 
 #### 7.4.3 组合索引
 
@@ -537,6 +555,8 @@ mysql> UPDATE accounts SET level = 100 WHERE id = 5;
 - 就像下面的查询，B+树会先比较a列来确定下一步应该搜索的方向，往左还是往右。如果a列相同再比较b列。但是如果查询条件没有a列，B+树就不知道第一步应该从哪个节点查起。
 
 - 可以说创建的idx_abc(a,b,c)索引，相当于创建了(a)、（a,b）（a,b,c）三个索引。
+
+![MySQL_12](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_12.png)
 
 #### 7.4.4 前缀索引 
 
@@ -663,6 +683,8 @@ SHOW INDEX FROM tableName;
   - 在经常需要根据范围进行搜索的列上创建索引，因为索引已经排序，所以其指定的范围是连续的。
   - 在经常需要排序的列上创建索引，因为索引已经排序，所以查询时可以利用索引的排序，加快排序查询。
   - 在经常使用 WHERE 子句的列上创建索引，加快条件的判断速度。
+  
+  ![MySQL_16](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_16.jpg)
 
 ## 8. B+树索引
 
@@ -693,6 +715,8 @@ SHOW INDEX FROM tableName;
   - B树的问题：
     - B树不支持范围查询的快速查找，你想想这么一个情况如果我们想要查找10和35之间的数据，查找到15之后，需要回到根节点重新遍历查找，需要从根节点进行多次遍历，查询效率有待提高。
     - 如果data存储的是行记录，行的大小随着列数的增多，所占空间会变大。这时，一个页中可存储的数据量就会变少，树相应就会变高，磁盘IO次数就会变大。
+    
+    ![MySQL_5](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_5.png)
 
 - B+树
 
@@ -704,11 +728,19 @@ SHOW INDEX FROM tableName;
     - B树中的非叶节点，记录数比子节点个数少1；而B+树中记录数与子节点个数相同。
     - **可以看到B+树可以保证等值和范围查询的快速查找，MySQL的索引就采用了B+树的数据结构。**
 
+    - **等值查询**：
+    
+    ![MySQL_6](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_6.png)
+    
+    - **范围查询：**
+    
+    ![MySQL_7](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_7.png)
+    
   - B+树与B树比较：
     - 更少的IO次数：B+树的非叶节点只包含键，而不包含真实数据，因此每个节点存储的记录个数比B数多很多（即阶m更大），因此B+树的高度更低，访问时所需要的IO次数更少。此外，由于每个节点存储的记录数更多，所以对访问局部性原理的利用更好，缓存命中率更高。
     - 更适于范围查询：在B树中进行范围查询时，首先找到要查找的下限，然后对B树进行中序遍历，直到找到查找的上限；而B+树的范围查询，只需要对链表进行遍历即可。
     - 更稳定的查询效率：B树的查询时间复杂度在1到树高之间(分别对应记录在根节点和叶节点)，而B+树的查询复杂度则稳定为树高，因为所有数据都在叶节点。由于非叶子结点并不是最终指向文件内容的结点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根结点到叶子结点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。
-
+  
   - B+树也存在劣势：由于键会重复出现，因此会占用更多的空间。
 
 ## 9. 数据库三大范式
@@ -737,6 +769,10 @@ SHOW INDEX FROM tableName;
   - INSERT时，保存当前事务版本号为行的创建版本号
   - DELETE时，保存当前事务版本号为行的删除版本号
   - UPDATE时，插入一条新纪录，保存当前事务版本号为行创建版本号，同时保存当前事务版本号到原来删除的行
+  
+  ![MySQL_23](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_23.png)
+
+https://www.jianshu.com/p/8845ddca3b23
 
 
 ### 10.1 快照读/**非阻塞读（Nonlocking Read）**
@@ -1012,6 +1048,16 @@ WHERE A.Key IS NULL OR B.Key IS NULL
 - 在InnoDB中只针对二级索引有效
 - **索引条件下推优化可以减少存储引擎查询基础表的次数，也可以减少MySQL服务器从存储引擎接收数据的次数。**
 
+![MySQL_19](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_19.png)
+
+
+
+![MySQL_20](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_20.png)
+
+
+
+![MySQL_21](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_21.png)
+
 ### 14.7 唯一索引和普通索引的选择
 
 - 唯一索引和普通索引在读取的时候效率基本差不多，普通索引差了一点点。主要是判断和特殊情况下的一次IO 
@@ -1025,6 +1071,8 @@ WHERE A.Key IS NULL OR B.Key IS NULL
 - 在下次查询需要访问这个数据页的时候，将数据页读入内存，然后执行change buffer中与这个页有关的操作，通过这种方式就能保证这个数据逻辑的正确性。
 - 将change buffer中的操作应用到原数据页，得到最新结果的过程称为merge。
 - 除了访问这个数据页会触发merge外，系统有后台线程会定期merge。在数据库正常关闭（shutdown）的过程中，也会执行merge操作。
+
+![MySQL_17](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_17.png)
 
 - 如果能够将更新操作先记录在change buffer，减少读磁盘，语句的执行速度会得到明显的提升。而且，数据读入内存是需要占用buffer pool的，所以这种方式还能够避免占用内存，提高内存利用率。将数据从磁盘读入内存涉及随机IO的访问，是数据库里面成本最高的操作之一，change buffer因为减少了随机磁盘访问，所以对更新性能的提升是会很明显的。
 - 对于唯一索引来说，所有的更新操作都要先判断这个操作是否违反唯一性约束。要判断表中是否存在这个数据，而这必须要将数据页读入内存才能判断，如果都已经读入到内存了，那直接更新内存会更快，就没必要使用change buffer了。
@@ -1048,6 +1096,8 @@ WHERE A.Key IS NULL OR B.Key IS NULL
 ## 15. MySQL底层
 
 ### 15.1 基础框架
+
+![MySQL_13](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_13.png)
 
 - 1、连接器管理： 首先是数据库连接器，主要负责和客户端建立连接、权限获取、管理连接等，由于整个建连的过程比较复杂，所以尽量使用长连接。如果数据库发生异常后为了快速恢复，可重启系统重新建立连接
 - 2、Mysql缓存：mysql请求首先看缓存数据，key为sql语句value为查询的结果，如果存在则直接返回。如果没有则直接往下走。注意：mysql缓存对于一些静态数据比较适合，对于实时性高的数据最好不要使用。
@@ -1073,6 +1123,12 @@ WHERE A.Key IS NULL OR B.Key IS NULL
   - 对于redo中是Prepare状态的事务，如果binlog中已记录完成则提交，否则回滚事务
 
 ### 15.3 MySQL查询过程
+
+![MySQL_14](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_14.png)
+
+
+
+![MySQL_15](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_15.png)
 
 - 连接器：我们要进行查询，第一步就是先去链接数据库，那这个时候就是连接器跟我们对接。他负责跟客户端建立链接、获取权限、维持和管理连接。链接的时候会经过TCP握手，然后身份验证，然后我们输入用户名密码就好了。
 
@@ -1151,6 +1207,8 @@ https://mp.weixin.qq.com/s/bfCDkNKKayXBiNX5vuD4nw
   ```sql
   col_name data_type [GENERATED ALWAYS] AS (expr)  [**VIRTUAL** | **STORED**] [NOT NULL | NULL]
   ```
+
+  ![MySQL_22](/Users/kaihe/Desktop/kaihe_sde_interview/Image/MySQL_22.png)
 
   - **VIRTUAL**生成列用于复杂的条件定义，能够简化和统一查询，不占用空间，访问列是会做计算。
 
